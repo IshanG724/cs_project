@@ -13,25 +13,30 @@ if conn.is_connected():
         return co.fetchall()
 
     def enterroomtypes():
-        print('\nEnter the details for roomtypes available in your hotel\nType "none" when done')
+        global roomtypes
+        global noofroomspertype
+        
+        print('\nEnter the details for roomtypes available in your hotel\nType "none" when done\n')
         ip,counter='',1
         roomtypes={}
         noofroomspertype={}
         while True:
-            ip=input("Room type #"+counter+" : ")
-            ip2=input("No. of rooms per floor for room type \""+ip+"\" : ")
+            ip=input("Room type #"+str(counter)+" : ")
             if ip=="none":
                 break
+            ip2=input("No. of rooms per floor for room type \""+ip+"\" : ")
             roomtypes[counter]=ip
             noofroomspertype[counter]=ip2
+            counter+=1
 
     def listroomtypes():
-        counter2=1
-        for i,j in roomtypes.values[0]:
+        counter2=1          # just for beauty of o/p
+        for i in roomtypes:
+            j=roomtypes[i]
             if counter2%3==0:
-                print(i+") "+j,end="\n")
+                print(str(i)+") "+j,end="\n")
             else:
-                print(i+") "+j,end='\t')
+                print(str(i)+") "+j,end='\t')
             counter2+=1
 
     def reg_staff():    
@@ -690,4 +695,6 @@ if conn.is_connected():
             executer("use {}".format(i_1))
         login()
 
-    initiation()
+    #initiation()
+    enterroomtypes()
+    listroomtypes()
