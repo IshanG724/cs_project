@@ -66,13 +66,14 @@ if conn.is_connected():
         conn.commit()
 
     def cust_details(cin,roomno):
+        print(cin,roomno,"\n\n")
         c_name=input("Enter name : ")
         c_add=input("Enter address : ")
         c_ph=int(input("Enter phone number : "))
         c_email=input("Enter email address : ")
         c_out=input("Enter Expected date of checkout (yyyy-mm-dd) : ")
         a=str(roomno)
-        m="insert into {}(cust_name, cust_address, ph_no, c_email, Check_in_date, Expected_Checkout) values ('{}','{}',{},'{}','{}','{}')".format(a,c_name,c_add,c_ph,c_email,cin,c_out)
+        m="insert into {}(cust_name, cust_address, ph_no, c_email, Check_in_date, Expected_Checkout) values ('{}','{}',{},'{}','{}','{}');".format(a,c_name,c_add,c_ph,c_email,cin,c_out)
         executer(m)
         conn.commit()
         print()
@@ -245,7 +246,7 @@ if conn.is_connected():
                     go_to_cust_details(c_date, i[-1])
                 else:
                     for f in f1:
-                        date = f[0]
+                        date = str(f[0])
                         yy = int(date[0:4])
                         mm = int(date[5:7])
                         dd = int(date[8:10])
