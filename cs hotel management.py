@@ -737,4 +737,3 @@ if conn.is_connected():
             hoteldata()
         login()
     initiation()
-    
