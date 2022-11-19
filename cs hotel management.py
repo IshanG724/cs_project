@@ -15,28 +15,28 @@ if conn.is_connected():
     def enterroomtypes():
         global roomtypes
         global noofroomspertype
-        
+        executer("create table if not exists rtypeinfo(typeroom int(2) not null , typename varchar(20),noofroomsperfloor int(2) not null ,price bigint(10) not null)")
         print('\nEnter the details for roomtypes available in your hotel\nType "none" when done\n')
-        ip,counter='',1
-        roomtypes={}
-        noofroomspertype={}
+        counter=1
         while True:
             ip=input("Room type #"+str(counter)+" : ")
             if ip=="none":
                 break
-            ip2=input("No. of rooms per floor for room type \""+ip+"\" : ")
-            roomtypes[counter]=ip
-            noofroomspertype[counter]=ip2
+            ip2=int(input("No. of rooms per floor for room type \""+ip+"\" : "))
+            ip3 = int(input("Per day charges of Room type \""+ip+"\" (in Rs): "))
+            s="insert into rtypeinfo(typeroom,typename,noofroomsperfloor,price) values({},'{}',{},{});".format(counter,ip,ip2,ip3)
+            executer(s)
             counter+=1
 
-    def listroomtypes():
+    def ratelistroomtypes():
+        k=allfetcher(rtypeinfo)
         counter2=1          # just for beauty of o/p
-        for i in roomtypes:
-            j=roomtypes[i]
+        for i in k:
+            j,k,l=i[0],i[1],i[3]
             if counter2%3==0:
-                print(str(i)+") "+j,end="\n")
+                print(str(j)+") "+k+" --> "+str(l),end="\n")
             else:
-                print(str(i)+") "+j,end='\t')
+                print(str(j)+") "+k+" --> "+str(l),end='\t')
             counter2+=1
 
     def reg_staff():    
@@ -219,8 +219,8 @@ if conn.is_connected():
     def checkin():
         time.sleep(1)
         print('~'*90)
-        print("\t\t\tRATE LIST")    
-        print("1) ",roomn[1]," : ",roomd[1],"/-\t\t\t2) ",roomn[2]," : ",roomd[2],"/- \n3) ",roomn[3]," : ",roomd[3],"/-\t\t\t4) ",roomn[4]," : ",roomd[4],"/-\n5) ",roomn[5]," : ",roomd[5],"/-")
+        print("\t\t\tRATE LIST")
+        ratelistroomtypes()
         i_ques3=int(input("Enter the type of room customer is looking for : "))
         i_ques4=input("Enter the floor customer want a room at. : ")
         c_date=input("Enter Check in Date in format yyyy-mm-dd : ")
@@ -429,8 +429,8 @@ if conn.is_connected():
 
     def login():
         print('~'*90)
-        print("\t\t\t",i_1,"Hotel")
-        print("\t\t\tWelcome to Login Screen")
+        print("\t\t\t\t\t","Hotel",i_1.upper())
+        print("\t\t\t\tWelcome to Login Screen")
         print('~'*90)
         print("\t\tChoose any from the folloing options using their number assigned")
         print("\t\t\t1. Manager")
@@ -632,44 +632,47 @@ if conn.is_connected():
             receptionist()
     
     def hoteldata():
-        global i_2
         i_2='create database '+i_1+';'        
         executer(i_2)
         executer("use "+i_1+";")
         time.sleep(1)
-        print("\n\t It seems you are entering details for a new hotel, so you've been redirected here")
-        time.sleep(1.5)
-        print("\n\tEnter the following details so that we can create database for your hotel")
+        print("\n It seems you are entering details for a new hotel, so you've been redirected here .......")
+        time.sleep(1.1)
+        print("\n\tEnter the following details so that we can create database for your hotel"+i_1)
         global i_ques2
         i_ques2=int(input("Enter number of floors in your hotel : "))
         enterroomtypes()
-        executer("create table hotel(n_floors integer(3) NOT NULL, roomperfloorpertype integer(3) NOT NULL, roomtypes integer(1));")
-        kl="insert into hotel(n_floors, roomperfloorpertype, roomtypes) values({},{},{})".format(i_ques2,n_roomperfloorpertype,k)
-        conn.commit()
-        a=1
-        i_3="create table if not exists floors(floor int(3) not null primary key, room_no int(3) not null, room_type int(1) not null );"
-        executer(i_3)
+        #executer("create table hotel(n_floors integer(3) NOT NULL, roomperfloorpertype integer(3) NOT NULL, roomtypes integer(1));")
+        #kl="insert into hotel(n_floors, roomperfloorpertype, roomtypes) values({},{},{})".format(i_ques2,n_roomperfloorpertype,k)
+        #conn.commit()
+        #a=1
+        #i_3="create table if not exists floors(floor int(3) not null primary key, room_no int(3) not null, room_type int(1) not null );"
+        #executer(i_3)
+        executer("select * from rtypeinfo")
+        y=allfetcher()
         for i in range (1,i_ques2+1):
-            for j in range (1,n_roomperfloorpertype+1):
-                for e in range (1,1+m):
-                    a=str(a)
-                    s="create table room"+a+"(cust_name varchar(20), cust_address longtext, ph_no bigint(20) unique, c_email varchar(100) unique, room_type int(1) not null default({}), floor int(2) not null defalult({}), Check_in_date date, Expected_Checkout date, checkoutdone default 'no');.".format(j,i)
-                    executer(s)
-                    a=int(a)
-                    d="insert into floors(floor,room_no,room_type) values({},{},{})".format(i,a,j)
-                    executer(d)
+            for e in y:
+                tmp=e[2]
+                a=1
+                while tmp!=0:
+                    s="create table R"+str(i)+str(e[0])+str(a)+"(cust_name varchar(20), cust_address longtext, ph_no bigint(20) unique, c_email varchar(100) unique, room_type int(1) not null, floor int(2) not null , Check_in_date date, Expected_Checkout date, checkoutdone varchar(5) default 'no');"
+                    executer(s)  # room name = floor+type+number  ::R321 = 3rd floor, type 2 , 1st room out of noofroomsperfloor available
                     a+=1
+                    tmp-=1
+                #d="insert into floors(floor,room_no,room_type) values({},{},{})".format(i,a,j)
+                #executer(d)
+                #a+=1
         i_5="create table if not exists staff"
         i_6=" (st_id varchar(3) not null primary key, st_name varchar(20) not null,st_address longtext not null, st_phno bigint(20) not null unique, st_emailid varchar(100) not null unique, st_job varchar(20) not null,st_salary int(9) not null,st_floor int(4) not null);"
         s=i_5+i_6
         executer(s)
-        executer("create table past_visitors as(select ph_no, Check_in_date, Expected_checkout);")
-        executer("alter table past_visitors add(Amount_payed int(5), checkoutdate date")
+        #executer("create table past_visitors as(select ph_no, Check_in_date, Expected_checkout);")
+        #executer("alter table past_visitors add(Amount_paid int(5), checkoutdate date")
 
     def initiation():
         executer("create database if not exists hotels;")
         executer("Use hotels;")
-        executer("create table if not exists hotel (hotel_name varchar(15) NOT NULL)")
+        #executer("create table if not exists hotel (hotel_name varchar(15) NOT NULL)")
         key=147258369
         print('~'*90)
         print("\t\t\tWelcome to Hotel Management System")
@@ -683,18 +686,14 @@ if conn.is_connected():
             print('~'*90)
             print("You can restart system anytime by same interface, just type initiation() on command line")
             print('~'*90)
-            print("thanks for service")
+            print("Thanks for Service")
             return("")
         global i_1
         i_1=input("Enter your Hotel's name : ")                      # Hotel name take any!!!
         try:
-            co.execute(str("use "+i_1+";"))
+            co.execute("use "+i_1+";")
         except:
             hoteldata()
-        finally:
-            executer("use {}".format(i_1))
         login()
-
-    #initiation()
-    enterroomtypes()
-    listroomtypes()
+    initiation()
+    
