@@ -29,7 +29,8 @@ if conn.is_connected():
             counter+=1
 
     def ratelistroomtypes():
-        k=allfetcher(rtypeinfo)
+        executer("select * from rtypeinfo;")
+        k=allfetcher()
         counter2=1          # just for beauty of o/p
         for i in k:
             j,k,l=i[0],i[1],i[3]
