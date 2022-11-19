@@ -227,12 +227,52 @@ if conn.is_connected():
         y=int(c_date[0:4])
         m=int(c_date[5:7])
         d=int(c_date[8:10])
-        ab="select room_no from floors where room_type={} and floor={}".format(i_ques3,i_ques4)
-        executer(ab)
+        executer("select room_no from floors where floor={};".format(i_ques4))
         c=allfetcher()
         for i in c:
-            gk=str(c[i])
-            executer("select Expected_Checkout, checkoutdone from room{};".format(gk))
+            if i[1][2]==i_ques4:
+                executer("select Expected_Checkout, checkoutdone from '{}';".format(i))
+                f1 = allfetcher()
+                for f in f1:
+                    date = f[0]
+                    yy = int(date[0:4])
+                    mm = int(date[5:7])
+                    dd = int(date[8:10])
+                    cd = f[1]
+                if y > yy:
+                    cust_details(c_date, i)
+                    time.sleep(1)
+                    print()
+                    input('Press Enter to continue.........')
+                    receptionist()
+                elif m > mm:
+                    cust_details(c_date, i)
+                    time.sleep(1)
+                    print()
+                    input('Press Enter to continue.........')
+                    receptionist()
+                elif d > dd:
+                    cust_details(c_date, i)
+                    time.sleep(1)
+                    print()
+                    input('Press Enter to continue.........')
+                    receptionist()
+                elif cd == 'yes':
+                    cust_details(c_date, i)
+                    time.sleep(1)
+                    print()
+                    input('Press Enter to continue.........')
+                    receptionist()
+                else:
+                    time.sleep(1.2)
+                    print("Rooms of such requirements are not available")
+                    time.sleep(0.3)
+                    print("please search for another room type or floor or for another checkin date")
+                    time.sleep(1)
+                    input("press enter to continue.............")
+                    checkin()
+
+        '''for i in c:
             fk=allfetcher()
             for f in fk:
                 date=f[0]
@@ -271,7 +311,7 @@ if conn.is_connected():
                 print("please search for another room type or floor or for another checkin date")
                 time.sleep(1)
                 input("press enter to continue.............")
-                checkin()
+                checkin()'''
 
     def key_change():
         new_key=input("Enter new Master Key : ")
@@ -639,15 +679,15 @@ if conn.is_connected():
         print("\n It seems you are entering details for a new hotel, so you've been redirected here .......")
         time.sleep(1.1)
         print("\n\tEnter the following details so that we can create database for your hotel"+i_1)
-        global i_ques2
+        global i_ques2, rno
         i_ques2=int(input("Enter number of floors in your hotel : "))
         enterroomtypes()
         #executer("create table hotel(n_floors integer(3) NOT NULL, roomperfloorpertype integer(3) NOT NULL, roomtypes integer(1));")
         #kl="insert into hotel(n_floors, roomperfloorpertype, roomtypes) values({},{},{})".format(i_ques2,n_roomperfloorpertype,k)
         #conn.commit()
         #a=1
-        #i_3="create table if not exists floors(floor int(3) not null primary key, room_no int(3) not null, room_type int(1) not null );"
-        #executer(i_3)
+        i_3="create table if not exists floors(floor int(3) not null primary key, room_no varchar(5) not null);"
+        executer(i_3)
         executer("select * from rtypeinfo")
         y=allfetcher()
         for i in range (1,i_ques2+1):
@@ -655,13 +695,13 @@ if conn.is_connected():
                 tmp=e[2]
                 a=1
                 while tmp!=0:
-                    s="create table R"+str(i)+str(e[0])+str(a)+"(cust_name varchar(20), cust_address longtext, ph_no bigint(20) unique, c_email varchar(100) unique, room_type int(1) not null, floor int(2) not null , Check_in_date date, Expected_Checkout date, checkoutdone varchar(5) default 'no');"
-                    executer(s)  # room name = floor+type+number  ::R321 = 3rd floor, type 2 , 1st room out of noofroomsperfloor available
+                    rno="R"+str(i)+str(e[0])+str(a)
+                    s="create table"+rno+"(cust_name varchar(20), cust_address longtext, ph_no bigint(20) unique, c_email varchar(100) unique, room_type int(1) not null, floor int(2) not null , Check_in_date date, Expected_Checkout date, checkoutdone varchar(5) default 'no');"
+                    executer(s)  # room name = floor+type+number --> Ex --> R321 = 3rd floor, type 2 , 1st room out of noofroomsperfloor available
                     a+=1
                     tmp-=1
-                #d="insert into floors(floor,room_no,room_type) values({},{},{})".format(i,a,j)
-                #executer(d)
-                #a+=1
+                    d="insert into floors(floor,room_no) values('{}','{}')".format(i,rno)
+                    executer(d)
         i_5="create table if not exists staff"
         i_6=" (st_id varchar(3) not null primary key, st_name varchar(20) not null,st_address longtext not null, st_phno bigint(20) not null unique, st_emailid varchar(100) not null unique, st_job varchar(20) not null,st_salary int(9) not null,st_floor int(4) not null);"
         s=i_5+i_6
