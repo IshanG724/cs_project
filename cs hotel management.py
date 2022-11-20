@@ -58,8 +58,7 @@ if conn.is_connected():
         executer('select * from counter1;')
         check=allfetcher()
         sid="S"+str(len(check))
-        m="insert into staff"+ "(st_id,st_name,st_address,st_phno,st_emailid,st_job,st_salary,st_floor) values ('{}','{}','{}',{},'{}','{}',{},{})".format(sid,s_name,s_add,s_ph,s_email,s_pos,s_salary,s_floor_allotted)
-        executer(m)
+        executer("insert into staff (st_id,st_name,st_address,st_phno,st_emailid,st_job,st_salary,st_floor) values ('{}','{}','{}',{},'{}','{}',{},{});".format(sid,s_name,s_add,s_ph,s_email,s_pos,s_salary,s_floor_allotted))
         conn.commit()
         print("\nStaff member added successfully")
         time.sleep(1)
@@ -146,7 +145,6 @@ if conn.is_connected():
             print()
             executer("select * from {} ;".format(b))
             roomdata = allfetcher()
-            data_found = 0
             if len(roomdata) == 0:
                 print("Room hasn't been booked yet!")
             else:
@@ -172,7 +170,7 @@ if conn.is_connected():
         print("~"*90)
         print("How you want to access data?")
         print("1. Whole at once")
-        print("2. floor wise")
+        print("2. Floor wise")
         print()
         os=int(input("How you want to access data? "))
         print()
@@ -187,7 +185,7 @@ if conn.is_connected():
                     break
                 elif len(pr)!=0 and l==0:
                     l=1
-                    print("•ID|Name|Address|Phone No.|Email ID|Job|Salary|Floor alloted|")
+                    print("•ID|Name|Address|Phone No.|Email ID|Job|Salary|Floor allotted|")
                 else:
                     print("\n•These are details of your staff")
                     for i in pr:
@@ -204,7 +202,7 @@ if conn.is_connected():
                 print("No data found")
             else:
                 count=0
-                print("\nThese are details of your staff which works on floor number "+llll)
+                print("\nThese are details of your staff which works on floor number "+llll+"\n")
                 print("•ID|Name|Address|Phone No.|Email ID|Job|Salary|\n")
                 while count<len(pr):
                     st2=''
@@ -253,6 +251,7 @@ if conn.is_connected():
         print("\n\nCheckout Successful")
         time.sleep(1)
         input("Press Enter to Continue.......")
+        return()
 
     def go_to_cust_details(x,y):   #To avoid unnecessary repetition of code block in checkin
         cust_details(x,y)
@@ -320,17 +319,17 @@ if conn.is_connected():
                 t=i_1
                 u='Master_key'
                 p='147258369'
-                executer("insert into pass(login_type , userid , passw) values('{}','{}','{}')".format(t,u,p))
+                executer("insert into pass(login_type , userid , passw) values('{}','{}','{}');".format(t,u,p))
                 conn.commit()
                 t='Manager'
                 u='Manag1010'
                 p='1010m'
-                executer("insert into pass(login_type , userid , passw) values('{}','{}','{}')".format(t,u,p))
+                executer("insert into pass(login_type , userid , passw) values('{}','{}','{}');".format(t,u,p))
                 conn.commit()
                 t='Receptionist'
                 u='Recep1010'
                 p='1010r'
-                executer("insert into pass(login_type , userid , passw) values('{}','{}','{}')".format(t,u,p))
+                executer("insert into pass(login_type , userid , passw) values('{}','{}','{}');".format(t,u,p))
                 conn.commit()
                 print("~"*90)
                 print("Initial Credentials created, if you wish to cahange the credentials choose update credentials in the login screen")
@@ -362,13 +361,11 @@ if conn.is_connected():
                 b=input("Enter old Password : ")
                 passcheckerm(a,b)
                 if xyz == 1:
-                    print("\n\nChanging Userid first")
                     j1=input("Enter new user name for Manager : ")
-                    executer("update pass set userid = '{}' where login_type = '{}'".format(j1,'Manager'))
+                    executer("update pass set userid = '{}' where login_type = '{}';".format(j1,'Manager'))
                     conn.commit()
-                    print("\nNow updating password")
                     j2=input("Enter new password for Manager : ")
-                    executer("update pass set passw = '{}' where login_type = '{}'".format(j2,'Manager'))
+                    executer("update pass set passw = '{}' where login_type = '{}';".format(j2,'Manager'))
                     conn.commit()
                     xyz=0
                 print("\nUser ID and Password successfully changed!")
@@ -380,13 +377,11 @@ if conn.is_connected():
                 b=input("Enter old Password : ")
                 passcheckerr(a,b)
                 if xyz==6:
-                    print("\n\nChanging Userid first\n")
                     j1=input("Enter new user name for Receptionist : ")
-                    executer("update pass set userid = '{}' where login_type = '{}'".format(j1,'Receptionist'))
+                    executer("update pass set userid = '{}' where login_type = '{}';".format(j1,'Receptionist'))
                     conn.commit()
-                    print("\nNow updating password")
                     j2=input("Enter new password for Receptionist : ")
-                    executer("update pass set passw = '{}' where login_type = '{}'".format(j2,'Receptionist'))
+                    executer("update pass set passw = '{}' where login_type = '{}';".format(j2,'Receptionist'))
                     conn.commit()
                     xyz=0
                 print("\nUser ID and Password successfully changed!")
@@ -496,7 +491,7 @@ if conn.is_connected():
     def updatestaffdetails():
         x=input("Enter staff id for which you want to change existing details : ")
         print("\nFor What field you want to update details for "+x)
-        print("1) Name, 2) Address, 3) Phone number, 4) Email id, 5) Job, 6) Sallary, 7) Floor\n")
+        print("1) Name, 2) Address, 3) Phone number, 4) Email id, 5) Job, 6) Salary, 7) Floor 8)Main Menu\n")
         y=int(input("Select from the above given options for which field you want to change details : "))
         o=""
         if y==1:
@@ -513,6 +508,8 @@ if conn.is_connected():
             o,m="st_salary","Salary"
         elif y==7:
             o,m="st_floor","Floor Allotted"
+        elif y==8:
+            manager()
         else:
             print("\nSelect appropriate option!!")
             updatestaffdetails()
@@ -525,47 +522,41 @@ if conn.is_connected():
         input("Press Enter to continue.........")
         
     def setprice():
-        executer("use hotels;")
-        executer("select * from hotel;")
-        k=allfetcher()
-        c=k[0][2]
-        global roomd
-        roomd={}
-        print("These are the room types")
-        print("1) Dulex Room\t\t \t2) Dulex Room (AC)\n3) Regular Room\t\t \t4) Regular Room (AC)\n5) Luxary 5 Star Room (AC)")
-        for i in c:
-           mk=input("Enter price for room "+i+": ")
-           roomd[i]=mk
-        global roomn
-        roomn={}
-        for i in c:
-            if i==1:
-                roomn[1]='Dulex Room'
-            elif i==2:
-                roomn[2]='Dulex Room (AC)'
-            elif i==3:
-                roomn[3]='Regular Room'
-            elif i==4:
-                roomn[4]='Regular Room (AC)'
-            elif i==5:
-                roomn[5]='Luxary 5 Star Room (AC)'
-        executer("use {}".format(i_1))
+        executer("select * from rtypeinfo;")
+        d1=allfetcher()
+        print("Current Rate List")
+        ratelistroomtypes()
+        for i in d1:
+            m=int(input("Enter updated price for room type "+i[1]+" : "))
+            executer("update rtypeinfo set price={} where typeroom={}".format(m,i[0]))
+            conn.commit()
+        print("Rate List updated successfully.\n")
+        time.sleep(1)
+        input("Press Enter to Continue.......")
+        return ()
 
     def prevv():
-        executer("use hotels;")
-        executer("select * from hotel;")
+        executer("select room_no from floors;")
         k=allfetcher()
-        n=0
-        for i in range(1,k[0][0]+1):
-            for j in range(1,1+k[0][1]):
-                for l in k[0][2]:
-                    n=n+1
-        executer("use "+i_1+";")
-        for i in range(1,1+n):
-            executer("select * from past_visitor natural join room"+str(i)+"where ph_no.past visitor=ph_no.room"+str(i)+";")
-            dick=allfetcher()
-            for i in dick:
-                print(i)
+        df=0
+        for i in k:
+            executer("select * from past_visitor natural join "+str(i)+" where ph_no.past_visitor=ph_no."+str(i)+";")
+            k1=allfetcher()
+            if len(k1)==0:
+                pass
+            df=1
+            for i in k1:
+                st1 = ''
+                for j in r:
+                    st1 = st1 + str(j) + ' | '
+                print('→', st1)
+        if df==0:
+            print("NO DATA FOUND")
+        time.sleep(0.4)
+        input("\nPress enter to continue......")
+        time.sleep(1)
+        return
+
 
     def manager():
         print('~'*90)
