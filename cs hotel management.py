@@ -547,7 +547,7 @@ if conn.is_connected():
         k=allfetcher()
         df=0
         for i in k:
-            executer("select * from "+str(i[0])+" natural join past_visitors where past_visitors.ph_no="+str(i[0])+".ph_no;")
+            executer("select * from "+str(i[0])+" natural join past_visitors where past_visitors.ph_no="+str(i[0])+".ph_no ;")
             k1=allfetcher()
             if len(k1)==0:
                 pass
