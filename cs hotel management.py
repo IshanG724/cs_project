@@ -7,20 +7,21 @@ xyz=0
 if conn.is_connected():
     co=conn.cursor()
 
-    def executer(s):
+    def executer(s):    #To execute all mysql commands
         co.execute(s)
     
-    def allfetcher():
+    def allfetcher():   #To fetch data from executed commands
         return co.fetchall()
 
-    def diff_dates(date1, date2):
+    def diff_dates(date1, date2):   #Get difference of 2 dates in days, for billing
         d1=date(int(date1[:4] ),int(date1[5:7]),int(date1[8:]))
         d2=date(int(date2[:4]),int(date2[5:7]),int(date2[8:]))
         return abs(d2 - d1).days
 
-    def enterroomtypes():
+    def enterroomtypes():   #For registering types of rooms available in the hotel
         global roomtypes
         global noofroomspertype
+        #Table for storing structure of room types in hotel
         executer("create table if not exists rtypeinfo(typeroom int(2) not null , typename varchar(20),noofroomsperfloor int(2) not null ,price bigint(10) not null);")
         print('\nEnter the details for roomtypes available in your hotel\nType "none" when done\n')
         counter=1
@@ -66,7 +67,7 @@ if conn.is_connected():
     def id_operator():
         s="create table if not exists counter1(cd varchar(5) not null);"
         executer(s)
-        j="insert into counter1(cd) values('{}')".format('ok')
+        j="insert into counter1(cd) values('{}');".format('ok')
         executer(j)
         conn.commit()
 
@@ -94,9 +95,9 @@ if conn.is_connected():
         print("3. Particular room")
         print()
         os=int(input("Your choice : "))
-        print()
-        print()
         if os==1:
+            print()
+            print()
             executer("select room_no from floors;")
             rooms=allfetcher()
             data_found=0
@@ -113,12 +114,12 @@ if conn.is_connected():
                         st1=''
                         for j in r:
                             st1 = st1 + str(j) + ' | '
-                        print(i+' →', st1)
+                        print(str(i[0])+' →', st1)
             if data_found==0:
                 time.sleep(0.35)
                 print("NO DATA FOUND")
         elif os==2:
-            b=int(input("For what floor you want to access data? "))
+            b=int(input("\nFor what floor you want to access data? "))
             print()
             executer("select room_no from floors where floor={};".format(b))
             rooms = allfetcher()
@@ -136,7 +137,7 @@ if conn.is_connected():
                         st1 = ''
                         for j in r:
                             st1 = st1 + str(j) + ' | '
-                        print(i + ' →', st1)
+                        print(str(i[0]) + ' →', st1)
             if data_found == 0:
                 time.sleep(0.35)
                 print("There's no room booked at this floor right now.")
@@ -176,7 +177,7 @@ if conn.is_connected():
         print()
         if os==1:
             l=0
-            executer("select * from staff")
+            executer("select * from staff;")
             pr=allfetcher()
             for i in range(2):
                 if len(pr)==0:
@@ -313,7 +314,7 @@ if conn.is_connected():
 
     def passcreater(key12): 
         if key12=="147258369":
-            s="create table if not exists pass(login_type varchar(20) not null , userid varchar(20) not null unique primary key , passw varchar(25) not null);"   ###
+            s="create table if not exists pass(login_type varchar(20) not null , userid varchar(20) not null unique primary key , passw varchar(25) not null);"
             executer(s)    
             try:
                 t=i_1
@@ -399,9 +400,9 @@ if conn.is_connected():
             login()
 
     def passcheckerm(a,b):
-        executer("select userid from pass where login_type='Manager';")    ####
+        executer("select userid from pass where login_type='Manager';")
         k=allfetcher()
-        executer("select passw from pass where login_type='Manager' ;")    ####
+        executer("select passw from pass where login_type='Manager' ;")
         r=allfetcher()
         if a==k[0][0] and b==r[0][0]:
             global xyz
@@ -413,9 +414,9 @@ if conn.is_connected():
             login()
 
     def passcheckermcall(a,b):
-        executer("select userid from pass where login_type='Manager';")    ####
+        executer("select userid from pass where login_type='Manager';")
         k=allfetcher()
-        executer("select passw from pass where login_type='Manager' ;")    ####
+        executer("select passw from pass where login_type='Manager' ;")
         r=allfetcher()
         if a==k[0][0] and b==r[0][0]:
             manager()
@@ -483,10 +484,15 @@ if conn.is_connected():
             print()
             print('~'*90)
             print("\t\t\tThanks for service")
-            print("You can restart system anytime by same interface, just type initiation() on command line")  #### initiation() use karne wali line add kar apne according, iss statement ke bracket ke andar hi.
+            print("You can restart system anytime by same interface, just type initiation() on command line")
         else:
             print("Select Valid option")
             login()
+
+    def removestaff():
+        x = input("Enter staff id to be removed : ")
+        executer("delete from staff where st_id='{}';".format(x))
+        print("\nStaff member succesfully removed from records.\n")
 
     def updatestaffdetails():
         x=input("Enter staff id for which you want to change existing details : ")
@@ -514,7 +520,7 @@ if conn.is_connected():
             print("\nSelect appropriate option!!")
             updatestaffdetails()
         a=input("\nEnter updated value for "+m+" : ")
-        fc="update staff set "+o+"='{}' where st_id='{}'".format(a,x)
+        fc="update staff set "+o+"='{}' where st_id='{}';".format(a,x)
         executer(fc)
         conn.commit()
         print("\n\nStaff Details Updated Sucessfully")
@@ -526,11 +532,12 @@ if conn.is_connected():
         d1=allfetcher()
         print("Current Rate List")
         ratelistroomtypes()
+        print("\n\n")
         for i in d1:
             m=int(input("Enter updated price for room type "+i[1]+" : "))
-            executer("update rtypeinfo set price={} where typeroom={}".format(m,i[0]))
+            executer("update rtypeinfo set price={} where typeroom={};".format(m,i[0]))
             conn.commit()
-        print("Rate List updated successfully.\n")
+        print("\nRate List updated successfully.\n")
         time.sleep(1)
         input("Press Enter to Continue.......")
         return ()
@@ -540,12 +547,12 @@ if conn.is_connected():
         k=allfetcher()
         df=0
         for i in k:
-            executer("select * from past_visitor natural join "+str(i)+" where ph_no.past_visitor=ph_no."+str(i)+";")
+            executer("select * from "+str(i[0])+"past_visitors natural join  where past_visitors.ph_no="+str(i[0])+".ph_no;")
             k1=allfetcher()
             if len(k1)==0:
                 pass
             df=1
-            for i in k1:
+            for r in k1:
                 st1 = ''
                 for j in r:
                     st1 = st1 + str(j) + ' | '
@@ -557,57 +564,67 @@ if conn.is_connected():
         time.sleep(1)
         return
 
+    def master_key():
+        time.sleep(0.7)
+        executer("select passw from pass where userid='Master_key';")
+        print("\nMaster key is → " + allfetcher()[0][-1] + "\n")
+        print("Do you wish to change  Master Key? \n\t1)Yes\n\t2)No")
+        i_key = input("\nYour choice : ")
+        if i_key == '2':
+            time.sleep(1)
+        elif i_key != '1' and i_key != '2':
+            print("Wrong input!\nGoing back to Main Menu........")
+            time.sleep(1)
+        else:
+            key_change()
 
     def manager():
         print('~'*90)
-        print('\t\t\tMAIN MENU')
+        print('\t\t\t\t\tMAIN MENU')
+        print("\t\t\t\tWelcome Manager")
         print()
-        print("Welcome Manager")
-        print()
-        print("\t1)Customer Details.\t\t2)Register Staff Member. \n\t3)Staff members' details \t\t4) Update Staff Details \n\t5)Set/Update Price List for rooms   \t6) Logout \n\t7) Master key \t\t8) old customer data fetcher")
-        print()
+        counter2 = 1
+        # spaces below are just for beauty of o/p
+        k={1:"Register Staff Member.    ",2:"Update Staff Data.",3:"Update Rate List of rooms.",4:"Remove Staff Member.",5:"Current Staff Data.       ",6:"Current Customers' Data.",7:"Past Visitors' Records.   ",8:"Master key.",9:"Logout."}
+        for i in k:
+            if counter2 % 2 == 0:
+                print(str(i) + ") " + k[i] , end="\n")
+            else:
+                print(str(i) + ") " + k[i] , end='\t\t')
+            counter2 += 1
+        print("\n")
         ch1 = int(input("Select your choice  :  "))
         try:
             if(ch1 == 1):
-                cust_details_output()
-                manager()
-            elif (ch1==2):
                 reg_staff()
                 manager()
-            elif ch1==3:
-                staffdetailer()
-                manager()
-            elif ch1==4:
+            elif (ch1==2):
                 updatestaffdetails()
                 manager()
-            elif ch1==5:
+            elif ch1==3:
                 setprice()
                 manager()
-            elif(ch1 ==6):
-                print()
-                print()
-                print('~'*90)
-                print('You have been logged out')
-                login()
-            elif ch1==7:
-                time.sleep(0.7)
-                executer("select passw from pass where userid='Master_key';")
-                print("\nMaster key is → "+allfetcher()[0][-1]+"\n")
-                print("Do you wish to change  Master Key? \n\t1)Yes\n\t2)No, proceed further.")
-                i_key=input("\nYour choice : ")
-                if i_key=='2':
-                    time.sleep(1)
-                    pass
-                elif i_key!='1' and i_key!='2':
-                    print("Wrong input!\nGoing back to Main Menu........")
-                    time.sleep(1)
-                    pass
-                else:
-                    key_change()
+            elif ch1==4:
+                removestaff()
                 manager()
-            elif ch1==8:
+            elif ch1==5:
+                staffdetailer()
+                manager()
+            elif(ch1 ==6):
+                cust_details_output()
+                manager()
+            elif ch1==7:
                 prevv()
                 manager()
+            elif ch1==8:
+                master_key()
+                manager()
+            elif ch1==9:
+                print()
+                print()
+                print('~' * 90)
+                print('You have been logged out')
+                login()
             else:
                 print("INVALID INPUT !! TRY AGAIN !!\n")
                 manager()
@@ -620,13 +637,12 @@ if conn.is_connected():
 
     def receptionist():
         print('~'*90)
-        print('\t\t\tMAIN MENU')
+        print('\t\t\t\t\t\t\t\tMAIN MENU')
+        print("\t\t\t\t\t\tWelcome Receptionist")
         print()
-        print("Welcome receptionist")
+        print("\t1) CheckIn.\t\t2) Customers' Data.\t\t3) CheckOut.\t\t4) Logout.")
         print()
-        print("\t1) CheckIn.\t\t2) Customer Details\n\t3) CheckOut\t\t4) Logout")
-        print()
-        ch1 = int(input("  select your choice  :  "))
+        ch1 = int(input("Select your choice  :  "))
         try:
             if(ch1 == 1):
                 checkin()
@@ -666,7 +682,7 @@ if conn.is_connected():
         enterroomtypes()
         i_3="create table if not exists floors(floor int(3) not null , room_no varchar(5) not null);"
         executer(i_3)
-        executer("select * from rtypeinfo")
+        executer("select * from rtypeinfo;")
         y=allfetcher()
         for i in range (1,i_ques2+1):
             for e in y:
@@ -678,7 +694,7 @@ if conn.is_connected():
                     executer(s)  # room name = floor+type+number --> Ex --> R321 = 3rd floor, type 2 , 1st room out of noofroomsperfloor available
                     a+=1
                     tmp-=1
-                    d="insert into floors(floor,room_no) values('{}','{}')".format(str(i),rno)
+                    d="insert into floors(floor,room_no) values('{}','{}');".format(str(i),rno)
                     executer(d)
         i_5="create table if not exists staff"
         i_6=" (st_id varchar(3) not null primary key, st_name varchar(20) not null,st_address longtext not null, st_phno bigint(20) not null unique, st_emailid varchar(100) not null unique, st_job varchar(20) not null,st_salary int(9) not null,st_floor int(4) not null);"
@@ -695,7 +711,7 @@ if conn.is_connected():
         print('~'*90)
         if start[0].lower()=='y':
             print("Initiating System")
-            time.sleep(1)
+            time.sleep(0.3)
         else:
             print('~'*90)
             print("You can restart system anytime by same interface, just type initiation() on command line")
@@ -703,7 +719,7 @@ if conn.is_connected():
             print("Thanks for Service")
             return("")
         global i_1
-        i_1=input("Enter your Hotel's name : ")                      # Hotel name take any!!!
+        i_1=input("Enter your Hotel's name : ")
         try:
             co.execute("use "+i_1+";")
         except:
