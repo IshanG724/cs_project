@@ -35,7 +35,7 @@ if conn.is_connected():
             executer(s)
             counter+=1
 
-    def ratelistroomtypes():
+    def ratelistroomtypes():    #To print current rate list
         executer("select * from rtypeinfo;")
         k=allfetcher()
         counter2=1          # just for beauty of o/p
@@ -47,7 +47,7 @@ if conn.is_connected():
                 print(str(j)+") "+k+" --> "+str(l),end='\t')
             counter2+=1
 
-    def reg_staff():    
+    def reg_staff():    #Add new working staff
         s_name=input("Enter staff member's name : ")
         s_ph=int(input("Enter staff member's phone number : "))
         s_add=input("Enter staff member's permanent residential address : ")
@@ -64,14 +64,14 @@ if conn.is_connected():
         print("\nStaff member added successfully")
         time.sleep(1)
         
-    def id_operator():
+    def id_operator():  #Used to create staff id
         s="create table if not exists counter1(cd varchar(5) not null);"
         executer(s)
         j="insert into counter1(cd) values('{}');".format('ok')
         executer(j)
         conn.commit()
 
-    def cust_details(cin,roomno):
+    def cust_details(cin,roomno):   #Input details of customer for checkin
         c_name=input("Enter name : ")
         c_add=input("Enter address : ")
         c_ph=int(input("Enter phone number : "))
@@ -87,7 +87,7 @@ if conn.is_connected():
         print("ROOM BOOKED SUCCESSFULLY !!!")
         time.sleep(1)
 
-    def cust_details_output():
+    def cust_details_output():  # Get output of data of customers currently in hotel
         print("~"*90)
         print("How you want to access data?")
         print("1. Whole at once")
@@ -167,11 +167,12 @@ if conn.is_connected():
         time.sleep(1.1)
         input("Press Enter to Continue.......")
 
-    def staffdetailer():
+    def staffdetailer():    #Get data of current working staff
         print("~"*90)
         print("How you want to access data?")
         print("1. Whole at once")
         print("2. Floor wise")
+        print("3. Particular Staff Member")
         print()
         os=int(input("How you want to access data? "))
         print()
@@ -211,7 +212,18 @@ if conn.is_connected():
                         st2=st2+str(i)+' | '
                     print('→',st2)
                     count+=1
-                
+        elif os==3:
+            llll = str(input("Enter Staff ID : "))
+            executer("select st_name, st_address, st_phno, st_emailid, st_job, st_salary,st_floor from staff where st_id={};".format(llll))
+            pr = allfetcher()
+            print("\nThese are details of staff member " + llll + "\n")
+            print("•ID|Name|Address|Phone No.|Email ID|Job|Salary|\n")
+            st2 = ''
+            for i in pr[0]:
+                st2 = st2 + str(i) + ' | '
+            print('→', st2)
+        else:
+            print("Wrong input!\nGoing back to Main Menu........")
         time.sleep(1)
         input("\n\nPress Enter to Continue.......")
         return()
@@ -287,14 +299,14 @@ if conn.is_connected():
                         mm = int(date[5:7])
                         dd = int(date[8:10])
                         cd = f[1]
-                        if y > yy:
-                            go_to_cust_details(c_date, i[-1])
-                        elif m > mm:
-                            go_to_cust_details(c_date, i[-1])
-                        elif d > dd:
-                            go_to_cust_details(c_date, i[-1])
-                        elif cd == 'yes':
-                            go_to_cust_details(c_date, i[-1])
+                    if y > yy:
+                        go_to_cust_details(c_date, i[-1])
+                    elif m > mm:
+                        go_to_cust_details(c_date, i[-1])
+                    elif d > dd:
+                        go_to_cust_details(c_date, i[-1])
+                    elif cd == 'yes':
+                        go_to_cust_details(c_date, i[-1])
         else:
             time.sleep(1.2)
             print("Rooms of such requirements are not available")
@@ -304,7 +316,7 @@ if conn.is_connected():
             input("press enter to continue.............")
             checkin()
 
-    def key_change():
+    def key_change():   #To Update master key
         new_key=input("Enter new Master Key : ")
         executer("update pass set passw='{}' where userid='{}' ;".format(new_key,'Master_key'))
         conn.commit()
@@ -312,7 +324,7 @@ if conn.is_connected():
         print("Redirecting to login screen.........")
         time.sleep(1)
 
-    def passcreater(key12): 
+    def passcreater(key12): # To create initial logins for hotel
         if key12=="147258369":
             s="create table if not exists pass(login_type varchar(20) not null , userid varchar(20) not null unique primary key , passw varchar(25) not null);"
             executer(s)    
@@ -347,7 +359,7 @@ if conn.is_connected():
             time.sleep(1)
             login()
             
-    def passupdater(key):
+    def passupdater(key):   #To change/update logins
         global xyz
         print("\n"+"~"*90)
         executer("select passw from pass where userid='Master_key';")
@@ -492,7 +504,7 @@ if conn.is_connected():
     def removestaff():
         x = input("Enter staff id to be removed : ")
         executer("delete from staff where st_id='{}';".format(x))
-        print("\nStaff member succesfully removed from records.\n")
+        print("\nStaff member successfully removed from records.\n")
 
     def updatestaffdetails():
         x=input("Enter staff id for which you want to change existing details : ")
