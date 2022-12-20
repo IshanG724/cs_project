@@ -466,41 +466,6 @@ if conn.is_connected():
             time.sleep(1)
             login()       
 
-    def login():
-        print('~'*90)
-        print("\t\t\t\t\t","Hotel",i_1.upper())
-        print("\t\t\t\tWelcome to Login Screen")
-        print('~'*90)
-        print("\t\tChoose any from the folloing options using their number assigned")
-        print("\t\t\t1. Manager")
-        print("\t\t\t2. Receptionist")
-        print("\t\t\t3. Create logins")
-        print("\t\t\t4. Update logins")
-        print("\t\t\t5. Exit System")
-        log=int(input("Enter your choice : "))
-        if log==1:
-            a=input("Enter user name : ")
-            b=input("Enter Password : ")
-            passcheckermcall(a,b)
-        elif log==2:
-            a=input("Enter user name : ")
-            b=input("Enter Password : ")
-            passcheckerrcall(a,b)
-        elif log==3:
-            j=input("Enter the Product Key for this system : ")  #Product key coz master key isn't defined yet.
-            passcreater(j)
-        elif log==4:
-            j=input("Enter Master key for this system : ")
-            passupdater(j)        
-        elif log==5:
-            print()
-            print('~'*90)
-            print("\t\t\tThanks for service")
-            print("You can restart system anytime by same interface, just type initiation() on command line")
-        else:
-            print("Select Valid option")
-            login()
-
     def removestaff():
         x = input("Enter staff id to be removed : ")
         executer("delete from staff where st_id='{}';".format(x))
@@ -680,17 +645,52 @@ if conn.is_connected():
             print("ERROR! GOING BACK TO MAIN MENU")
             time.sleep(1)
             receptionist()
+
+    def login():
+        print('~'*90)
+        print("\t\t\t\t\t","Hotel",i_1.upper())
+        print("\t\t\t\tWelcome to Login Screen")
+        print('~'*90)
+        print("\t\tChoose any from the folloing options using their number assigned")
+        print("\t\t\t1. Manager")
+        print("\t\t\t2. Receptionist")
+        print("\t\t\t3. Create logins")
+        print("\t\t\t4. Update logins")
+        print("\t\t\t5. Exit System")
+        log=int(input("Enter your choice : "))
+        if log==1:
+            a=input("Enter user name : ")
+            b=input("Enter Password : ")
+            passcheckermcall(a,b)
+        elif log==2:
+            a=input("Enter user name : ")
+            b=input("Enter Password : ")
+            passcheckerrcall(a,b)
+        elif log==3:
+            j=input("Enter the Product Key for this system : ")  #Product key coz master key isn't defined yet.
+            passcreater(j)
+        elif log==4:
+            j=input("Enter Master key for this system : ")
+            passupdater(j)        
+        elif log==5:
+            print()
+            print('~'*90)
+            print("\t\t\tThanks for service")
+            print("You can restart system anytime by same interface, just type initiation() on command line")
+        else:
+            print("Select Valid option")
+            login()
     
     def hoteldata():
         i_2='create database '+i_1+';'        
         executer(i_2)
         executer("use "+i_1+";")
         time.sleep(1)
-        print("\n It seems you are entering details for a new hotel, so you've been redirected here .......")
+        print("\nIt seems you are entering details for a new hotel, so you've been redirected here .......")
         time.sleep(1.1)
-        print("\n\tEnter the following details so that we can create database for your hotel"+i_1)
+        print("\nEnter the following details so that we can create database for your hotel : "+i_1)
         global i_ques2, rno
-        i_ques2=int(input("Enter number of floors in your hotel : "))
+        i_ques2=int(input("\nEnter number of floors in your hotel : "))
         enterroomtypes()
         i_3="create table if not exists floors(floor int(3) not null , room_no varchar(5) not null);"
         executer(i_3)
@@ -723,6 +723,7 @@ if conn.is_connected():
         print('~'*90)
         if start[0].lower()=='y':
             print("Initiating System")
+            print('~'*90)
             time.sleep(0.3)
         else:
             print('~'*90)
