@@ -5,7 +5,8 @@ try:
     conn=m.connect(host='localhost',user='root',passwd='7240')
 except:
     print("Wrong username or password for database !!\n")
-    conn = m.connect(host='localhost', user=input("Enter username : "), passwd=input("Password : "))
+    conn = m.connect(host='localhost', user=input("Enter username : "), passwd=input("Enter password : "))
+
 xyz=0
 co=conn.cursor()
 
