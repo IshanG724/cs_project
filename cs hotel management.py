@@ -1,6 +1,8 @@
 import mysql.connector as m
 import time
 from datetime import date
+from tabulate import tabulate
+
 try:
     conn=m.connect(host='localhost',user='root',passwd='7240')
 except:
@@ -41,14 +43,8 @@ def enterroomtypes():   #For registering types of rooms available in the hotel
 def ratelistroomtypes():    #To print current rate list
     executer("select * from rtypeinfo;")
     k=allfetcher()
-    counter2=1          # just for beauty of o/p
-    for i in k:
-        j,k,l=i[0],i[1],i[3]
-        if counter2%3==0:
-            print(str(j)+") "+k+" --> "+str(l),end="\n")
-        else:
-            print(str(j)+") "+k+" --> "+str(l),end='\t')
-        counter2+=1
+    k1=[[i[0],i[1],i[3]]for i in k]
+    print(tabulate(k1,headers=["S.No.","Type Name","Price"],tablefmt="grid",colalign=("center",)))
 
 def reg_staff():    #Add new working staff
     s_name=input("Enter staff member's name : ")
@@ -65,6 +61,7 @@ def reg_staff():    #Add new working staff
     executer("insert into staff (st_id,st_name,st_address,st_phno,st_emailid,st_job,st_salary,st_floor) values ('{}','{}','{}',{},'{}','{}',{},{});".format(sid,s_name,s_add,s_ph,s_email,s_pos,s_salary,s_floor_allotted))
     conn.commit()
     print("\nStaff member added successfully")
+    print("\nStaff ID : {}".format(sid))
     time.sleep(1)
 
 def id_operator():  #Used to create staff id
@@ -104,6 +101,7 @@ def cust_details_output():  # Get output of data of customers currently in hotel
         executer("select room_no from floors;")
         rooms=allfetcher()
         data_found=0
+        tabledata = []  #
         for i in rooms:
             executer("select * from {} ;".format(i[0]))
             roomdata=allfetcher()
@@ -112,13 +110,12 @@ def cust_details_output():  # Get output of data of customers currently in hotel
             for r in roomdata:
                 if r[-1]=='no':
                     if data_found==0:
-                        print("•Customer Name|Customer Address|Phone No.|Email ID|Room Type|FLoor|Check in date|Expected checkout date|Checkout status|\n")
-                        data_found=1
-                    st1=''
-                    for j in r:
-                        st1 = st1 + str(j) + ' | '
-                    print(str(i[0])+' →', st1)
-        if data_found==0:
+                        data_found=1    #
+                        tabledata.append("Room No.|Customer Name|Customer Address|Phone No.|Email ID|Check in date|Expected checkout date|Checkout status".split("|"))
+                    tabledata.append([i[0]]+list(r)) #
+        if data_found==1:
+            print(tabulate(tabledata,headers="firstrow",tablefmt="grid",colalign=("center",)))
+        else:
             time.sleep(0.35)
             print("NO DATA FOUND")
     elif os==2:
@@ -127,6 +124,7 @@ def cust_details_output():  # Get output of data of customers currently in hotel
         executer("select room_no from floors where floor={};".format(b))
         rooms = allfetcher()
         data_found = 0
+        tabledata=[]
         for i in rooms:
             executer("select * from {} ;".format(i[0]))
             roomdata = allfetcher()
@@ -135,15 +133,14 @@ def cust_details_output():  # Get output of data of customers currently in hotel
             for r in roomdata:
                 if r[-1] == 'no':
                     if data_found == 0:
-                        print("•Customer Name|Customer Address|Phone No.|Email ID|Room Type|FLoor|Check in date|Expected checkout date|Checkout status|\n")
                         data_found = 1
-                    st1 = ''
-                    for j in r:
-                        st1 = st1 + str(j) + ' | '
-                    print(str(i[0]) + ' →', st1)
-        if data_found == 0:
+                        tabledata.append("Room No.|Customer Name|Customer Address|Phone No.|Email ID|Check in date|Expected checkout date|Checkout status".split("|"))
+                    tabledata.append([i[0]] + list(r))
+        if data_found==1:
+            print(tabulate(tabledata,headers="firstrow",tablefmt="grid",colalign=("center",)))
+        else:
             time.sleep(0.35)
-            print("There's no room booked at this floor right now.")
+            print("There's no room booked at this floor right now.\n")
     elif os==3:
         b=input("For what room you want to access data? ")
         print()
@@ -153,22 +150,22 @@ def cust_details_output():  # Get output of data of customers currently in hotel
             print("Room hasn't been booked yet!")
         else:
             data_found=0
+            tabledata=[]
             for r in roomdata:
                 if r[-1] == 'no':
                     if data_found == 0:
-                        print("•Customer Name|Customer Address|Phone No.|Email ID|Room Type|FLoor|Check in date|Expected checkout date|Checkout status|\n")
                         data_found = 1
-                    st1 = ''
-                    for j in r:
-                        st1 = st1 + str(j) + ' | '
-                    print(b + ' →', st1)
-            if data_found == 0:
+                        tabledata.append("Customer Name|Customer Address|Phone No.|Email ID|Check in date|Expected checkout date|Checkout status".split("|"))
+                    tabledata.append(list(r))
+            if data_found == 1:
+                print(tabulate(tabledata, headers="firstrow", tablefmt="grid", colalign=("center",)))
+            else:
                 time.sleep(0.35)
-                print("There's no room booked at this floor right now.")
+                print("This room isn't booked currently.")
     else:
         print("Wrong input!\nGoing back to Main Menu........")
     time.sleep(1.1)
-    input("Press Enter to Continue.......")
+    input("\nPress Enter to Continue.......")
 
 def staffdetailer():    #Get data of current working staff
     print("~"*90)
@@ -183,6 +180,7 @@ def staffdetailer():    #Get data of current working staff
         l=0
         executer("select * from staff;")
         pr=allfetcher()
+        td1=[]
         for i in range(2):
             if len(pr)==0:
                 time.sleep(0.35)
@@ -190,15 +188,11 @@ def staffdetailer():    #Get data of current working staff
                 break
             elif len(pr)!=0 and l==0:
                 l=1
-                print("•ID|Name|Address|Phone No.|Email ID|Job|Salary|Floor allotted|")
+                td1.append("ID|Name|Address|Phone No.|Email ID|Job|Salary|Floor allotted".split("|"))
             else:
-                print("\n•These are details of your staff")
                 for i in pr:
-                    st1=''
-                    for j in i:
-                        st1=st1+str(j)+' | '
-                    print('→',st1)
-
+                    td1.append(list(i))
+                print(tabulate(td1,headers="firstrow", tablefmt="grid", colalign=("center",)))
     elif os==2:
         llll=str(int(input("For which floor you would like to fetch data? : ")))
         executer("select st_id, st_name, st_address, st_phno, st_emailid, st_job, st_salary from staff where st_floor={};".format(llll))
@@ -206,25 +200,20 @@ def staffdetailer():    #Get data of current working staff
         if len(pr)==0:
             print("No data found")
         else:
-            count=0
+            td1=["ID|Name|Address|Phone No.|Email ID|Job|Salary".split("|")]
+            td1+=[list(i) for i in pr]
             print("\nThese are details of your staff which works on floor number "+llll+"\n")
-            print("•ID|Name|Address|Phone No.|Email ID|Job|Salary|\n")
-            while count<len(pr):
-                st2=''
-                for i in pr[count]:
-                    st2=st2+str(i)+' | '
-                print('→',st2)
-                count+=1
+            print(tabulate(td1, headers="firstrow", tablefmt="grid", colalign=("center",)))
+
     elif os==3:
         llll = str(input("Enter Staff ID : "))
-        executer("select st_name, st_address, st_phno, st_emailid, st_job, st_salary,st_floor from staff where st_id={};".format(llll))
+        executer("select st_id,st_name, st_address, st_phno, st_emailid, st_job, st_salary,st_floor from staff where st_id='{}';".format(llll))
         pr = allfetcher()
+        td1 = ["ID|Name|Address|Phone No.|Email ID|Job|Salary|Floor allotted".split("|")]
+        td1 += [list(i) for i in pr]
         print("\nThese are details of staff member " + llll + "\n")
-        print("•ID|Name|Address|Phone No.|Email ID|Job|Salary|\n")
-        st2 = ''
-        for i in pr[0]:
-            st2 = st2 + str(i) + ' | '
-        print('→', st2)
+        print(tabulate(td1, headers="firstrow", tablefmt="grid", colalign=("center",)))
+
     else:
         print("Wrong input!\nGoing back to Main Menu........")
     time.sleep(1)
@@ -233,7 +222,7 @@ def staffdetailer():    #Get data of current working staff
 
 def checkout():
     co_room=input("Enter customer's room no. : ")
-    ph=int(input("Enter customer's mobile number"))
+    ph=int(input("Enter customer's mobile number : "))
     executer("select * from {} where ph_no={};".format(co_room,ph))
     f1=allfetcher()
     if len(f1)==0:
@@ -474,7 +463,7 @@ def login():
     print("\t\t\t\t\t","Hotel",i_1.upper())
     print("\t\t\t\tWelcome to Login Screen")
     print('~'*90)
-    print("\t\tChoose any from the folloing options using their number assigned")
+    print("Choose any from the folloing options using their number assigned")
     print("\t\t\t1. Manager")
     print("\t\t\t2. Receptionist")
     print("\t\t\t3. Create logins")
@@ -565,14 +554,13 @@ def prevv():
         executer("select * from "+str(i[0])+" natural join past_visitors where past_visitors.ph_no="+str(i[0])+".ph_no ;")
         k1=allfetcher()
         if len(k1)==0:
-            pass
+            continue
         df=1
-        for r in k1:
-            st1 = ''
-            for j in r:
-                st1 = st1 + str(j) + ' | '
-            print('→', st1)
-    if df==0:
+        td1=["Customer's Name|Phone No.|Email ID|Customer's Address|Checkin Date|Checkout Date|Bill Amount".split("|")]
+        td1+=[[i[3],i[0],i[5],i[4],i[1],i[-1],i[-2]] for i in k1]
+    if df==1:
+        print(tabulate(td1,colalign="center",tablefmt="grid"))
+    else:
         print("NO DATA FOUND")
     time.sleep(0.4)
     input("\nPress enter to continue......")
@@ -653,7 +641,7 @@ def manager():
 def receptionist():
     print('~'*90)
     print('\t\t\t\t\t\t\t\tMAIN MENU')
-    print("\t\t\t\t\t\tWelcome Receptionist")
+    print("\t\t\t\t\t\t  Welcome Receptionist")
     print()
     print("\t1) CheckIn.\t\t2) Customers' Data.\t\t3) CheckOut.\t\t4) Logout.")
     print()
